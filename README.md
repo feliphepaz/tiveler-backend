@@ -7,7 +7,7 @@ Sistema desenvolvido em Node.js e Express para atuar como o núcleo do Projeto T
 #### 1. Clone o repositório em sua máquina local:
 
 ```
-git clone git@github.com:ResultadosDigitais/tardis-backend.git
+git clone git@github.com:feliphepaz/tardis-backend.git
 ```
 
 #### 2. Acesse o diretório do projeto e execute o seguinte comando para instalar as dependências:
