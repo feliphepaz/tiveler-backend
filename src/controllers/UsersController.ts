@@ -66,6 +66,53 @@ export async function create(req: Request, res: Response) {
   }
 }
 
+export async function edit(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { email, password, accountType } = req.body
+    if (!email && !password && !accountType) {
+      throw 401
+    } else {
+      const userFound = await User.findById(id)
+      if (!userFound) {
+        throw 404
+      } else {
+        const salt = bcrypt.genSaltSync(10)
+        await User.findByIdAndUpdate(id, {
+          email: email ?? userFound.email,
+          password: password ? bcrypt.hashSync(password, salt) : userFound.password,
+          accountType: accountType ?? userFound.accountType
+        })
+        res.status(200).send({
+          success: true,
+          status: 200,
+          message: 'User updated'
+        })
+      }
+    }
+  } catch (error) {
+    if (error === 401) {
+      res.status(401).send({
+        success: false,
+        status: 401,
+        message: 'At least one field is required'
+      })
+    } else if (error === 404) {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'User does not exist'
+      })
+    } else {
+      res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'Error in request'
+      })
+    }
+  }
+}
+
 export async function remove(req: Request, res: Response) {
   try {
     const { id } = req.params
