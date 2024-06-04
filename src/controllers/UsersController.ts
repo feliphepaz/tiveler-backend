@@ -66,7 +66,7 @@ export async function create(req: Request, res: Response) {
   }
 }
 
-export async function del(req: Request, res: Response) {
+export async function remove(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
