@@ -36,9 +36,9 @@ export async function create(req: Request, res: Response) {
           accountType
         })
         await user.save()
-        res.status(200).send({
+        res.status(201).send({
           success: true,
-          status: 200,
+          status: 201,
           message: 'User created'
         })
       }
