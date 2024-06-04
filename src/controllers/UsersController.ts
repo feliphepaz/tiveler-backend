@@ -76,7 +76,7 @@ export async function remove(req: Request, res: Response) {
       res.status(200).send({
         success: true,
         status: 200,
-        message: 'User deleted'
+        message: 'User removed'
       })
     }
   } catch (error) {
