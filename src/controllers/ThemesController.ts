@@ -67,7 +67,7 @@ export async function removeTheme(req: Request, res: Response) {
       throw 'Not found'
     }
     const themeIndex = userFound.themes?.findIndex((theme) => theme.id.toString() === id)
-    if (themeIndex !== 0) {
+    if (themeIndex === undefined || themeIndex === -1) {
       throw 'Not found'
     }
     userFound.themes?.splice(themeIndex, 1)

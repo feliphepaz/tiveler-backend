@@ -67,7 +67,7 @@ export async function removeContent(req: Request, res: Response) {
       throw 'Not found'
     }
     const contentIndex = userFound.contents?.findIndex((content) => content.id.toString() === id)
-    if (contentIndex !== 0) {
+    if (contentIndex === undefined || contentIndex === -1) {
       throw 'Not found'
     }
     userFound.contents?.splice(contentIndex, 1)
