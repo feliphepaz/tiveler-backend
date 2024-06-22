@@ -6,17 +6,28 @@ export async function findUserById(req: Request, res: Response) {
   try {
     const { id } = req.params
     const userFound = await User.findById(id)
+    if (!userFound) {
+      throw 'Not found'
+    }
     res.status(200).send({
       success: true,
       status: 200,
       data: userFound
     })
   } catch (error) {
-    res.status(400).send({
-      success: false,
-      status: 400,
-      message: 'Error in request'
-    })
+    if (error === 'Not found') {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'User not found'
+      })
+    } else {
+      res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'Error in request'
+      })
+    }
   }
 }
 
@@ -25,51 +36,44 @@ export async function createUser(req: Request, res: Response) {
     const { email, password, accountType, subject, type } = req.body
     if (!email || !password || !accountType || (!subject && !type)) {
       throw 'Required'
+    }
+    const userFound = await User.findOne({ email })
+    if (userFound) {
+      throw 'Already exists'
+    }
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(password, salt)
+    if (accountType !== 'teacher' && accountType !== 'psychologist') {
+      throw 'Poorly formatted'
+    }
+    if (accountType === 'teacher' && !type) {
+      const newUser = new User({
+        email,
+        password: hash,
+        accountType,
+        subject
+      })
+      await newUser.save()
+      res.status(201).send({
+        success: true,
+        status: 201,
+        message: 'User created'
+      })
+    } else if (accountType === 'psychologist' && !subject) {
+      const newUser = new User({
+        email,
+        password: hash,
+        accountType,
+        type
+      })
+      await newUser.save()
+      res.status(201).send({
+        success: true,
+        status: 201,
+        message: 'User created'
+      })
     } else {
-      const userFound = await User.findOne({ email })
-      if (userFound) {
-        throw 'Already exists'
-      } else {
-        const salt = bcrypt.genSaltSync(10)
-        const hash = bcrypt.hashSync(password, salt)
-        if (accountType !== 'teacher' && accountType !== 'psychologist') {
-          throw 'Poorly formatted'
-        } else if (accountType === 'teacher') {
-          if (type) {
-            throw 'Not compatible'
-          } else {
-            const newUser = new User({
-              email,
-              password: hash,
-              accountType,
-              subject
-            })
-            await newUser.save()
-            res.status(201).send({
-              success: true,
-              status: 201,
-              message: 'User created'
-            })
-          }
-        } else {
-          if (subject) {
-            throw 'Not compatible'
-          } else {
-            const newUser = new User({
-              email,
-              password: hash,
-              accountType,
-              type
-            })
-            await newUser.save()
-            res.status(201).send({
-              success: true,
-              status: 201,
-              message: 'User created'
-            })
-          }
-        }
-      }
+      throw 'Not compatible'
     }
   } catch (error) {
     if (error === 'Required') {
@@ -112,25 +116,33 @@ export async function editUser(req: Request, res: Response) {
     const { email, password } = req.body
     if (!email && !password) {
       throw 'Required'
-    } else {
-      const userFound = await User.findById(id)
-      const salt = bcrypt.genSaltSync(10)
-      await User.findByIdAndUpdate(id, {
-        email: email ?? userFound?.email,
-        password: password ? bcrypt.hashSync(password, salt) : userFound?.password
-      })
-      res.status(200).send({
-        success: true,
-        status: 200,
-        message: 'User updated'
-      })
     }
+    const userFound = await User.findById(id)
+    if (!userFound) {
+      throw 'Not found'
+    }
+    const salt = bcrypt.genSaltSync(10)
+    await User.findByIdAndUpdate(id, {
+      email: email ?? userFound?.email,
+      password: password ? bcrypt.hashSync(password, salt) : userFound?.password
+    })
+    res.status(200).send({
+      success: true,
+      status: 200,
+      message: 'User updated'
+    })
   } catch (error) {
     if (error === 'Required') {
       res.status(422).send({
         success: false,
         status: 422,
         message: 'At least one field is required'
+      })
+    } else if (error === 'Not found') {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'User not found'
       })
     } else {
       res.status(400).send({
@@ -145,17 +157,28 @@ export async function editUser(req: Request, res: Response) {
 export async function removeUser(req: Request, res: Response) {
   try {
     const { id } = req.params
-    await User.findByIdAndDelete(id)
+    const userFound = await User.findByIdAndDelete(id)
+    if (!userFound) {
+      throw 'Not found'
+    }
     res.status(200).send({
       success: true,
       status: 200,
       message: 'User removed'
     })
   } catch (error) {
-    res.status(400).send({
-      success: false,
-      status: 400,
-      message: 'Error in request'
-    })
+    if (error === 'Not found') {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'User not found'
+      })
+    } else {
+      res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'Error in request'
+      })
+    }
   }
 }

@@ -8,33 +8,40 @@ export async function createTheme(req: Request, res: Response) {
     const { theme } = req.body
     if (!theme) {
       throw 'Required'
-    } else {
-      const userFound = await User.findById(userId)
-      if (!userFound?.type) {
-        throw 'Not compatible'
-      } else {
-        await User.findByIdAndUpdate(userId, {
-          email: userFound?.email,
-          password: userFound?.password,
-          accountType: userFound?.accountType,
-          type: userFound?.type,
-          themes: userFound?.themes
-            ? [...userFound.themes, { id: new Types.ObjectId(), theme }]
-            : [{ id: new Types.ObjectId(), theme }]
-        })
-        res.status(201).send({
-          success: true,
-          status: 201,
-          message: 'Theme created'
-        })
-      }
     }
+    const userFound = await User.findById(userId)
+    if (!userFound) {
+      throw 'Not found'
+    }
+    if (!userFound.type) {
+      throw 'Not compatible'
+    }
+    await User.findByIdAndUpdate(userId, {
+      email: userFound.email,
+      password: userFound.password,
+      accountType: userFound.accountType,
+      type: userFound.type,
+      themes: userFound.themes
+        ? [...userFound.themes, { id: new Types.ObjectId(), theme }]
+        : [{ id: new Types.ObjectId(), theme }]
+    })
+    res.status(201).send({
+      success: true,
+      status: 201,
+      message: 'Theme created'
+    })
   } catch (error) {
     if (error === 'Required') {
       res.status(422).send({
         success: false,
         status: 422,
         message: 'All fields are required'
+      })
+    } else if (error === 'Not found') {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'User not found'
       })
     } else if (error === 'Not compatible') {
       res.status(401).send({
@@ -54,26 +61,28 @@ export async function createTheme(req: Request, res: Response) {
 
 export async function removeTheme(req: Request, res: Response) {
   try {
-    const { userId, themeId } = req.params
+    const { userId, id } = req.params
     const userFound = await User.findById(userId)
-    const themeIndex = userFound?.themes?.findIndex((theme) => theme.id.toString() === themeId)
+    if (!userFound) {
+      throw 'Not found'
+    }
+    const themeIndex = userFound.themes?.findIndex((theme) => theme.id.toString() === id)
     if (themeIndex !== 0) {
       throw 'Not found'
-    } else {
-      userFound?.themes?.splice(themeIndex, 1)
-      await userFound?.save()
-      res.status(200).send({
-        success: true,
-        status: 200,
-        message: 'Theme removed'
-      })
     }
+    userFound.themes?.splice(themeIndex, 1)
+    await userFound.save()
+    res.status(200).send({
+      success: true,
+      status: 200,
+      message: 'Theme removed'
+    })
   } catch (error) {
     if (error === 'Not found') {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'Theme not found'
+        message: 'User or theme not found'
       })
     } else {
       res.status(400).send({

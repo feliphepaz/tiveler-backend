@@ -18,7 +18,7 @@ interface UserProps {
 
 const contentSchema = new Schema(
   {
-    id: { type: Schema.Types.ObjectId },
+    id: { type: Schema.Types.ObjectId, required: true },
     content: { type: String, required: true }
   },
   { _id: false }
@@ -26,7 +26,7 @@ const contentSchema = new Schema(
 
 const themeSchema = new Schema(
   {
-    id: { type: Schema.Types.ObjectId },
+    id: { type: Schema.Types.ObjectId, required: true },
     theme: { type: String, required: true }
   },
   { _id: false }
