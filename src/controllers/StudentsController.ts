@@ -38,6 +38,9 @@ export async function findStudentById(req: Request, res: Response) {
     if (!userFound) {
       throw 'Not found'
     }
+    if (userFound.accountType === 'psychologist') {
+      throw 'Not compatible'
+    }
     const studentFound = await Student.findById(id)
     if (!studentFound) {
       throw 'Not found'
@@ -53,6 +56,12 @@ export async function findStudentById(req: Request, res: Response) {
         success: false,
         status: 404,
         message: 'User or student not found'
+      })
+    } else if (error === 'Not compatible') {
+      res.status(401).send({
+        success: false,
+        status: 401,
+        message: 'User is not compatible'
       })
     } else {
       res.status(400).send({
@@ -76,6 +85,9 @@ export async function createStudent(req: Request, res: Response) {
     const userFound = await User.findById(userId)
     if (!userFound) {
       throw 'Not found'
+    }
+    if (userFound.accountType === 'psychologist') {
+      throw 'Not compatible'
     }
     const newStudent = new Student({
       userId: userFound._id,
@@ -108,6 +120,12 @@ export async function createStudent(req: Request, res: Response) {
         success: false,
         status: 404,
         message: 'User not found'
+      })
+    } else if (error === 'Not compatible') {
+      res.status(401).send({
+        success: false,
+        status: 401,
+        message: 'User is not compatible'
       })
     } else {
       res.status(400).send({
