@@ -6,14 +6,29 @@ interface StudentProps {
   age: number
   paymentType: 'monthly' | 'session'
   value: number
+  contents?: {
+    id: ObjectId
+    content: string
+    done: boolean
+  }[]
 }
+
+const contentSchema = new Schema(
+  {
+    id: { type: Schema.Types.ObjectId, required: true },
+    content: { type: String, required: true },
+    done: { type: Boolean, required: true }
+  },
+  { _id: false }
+)
 
 const schema = new Schema<StudentProps>({
   userId: { type: Schema.Types.ObjectId, required: true },
   name: { type: String, required: true },
   age: { type: Number, required: true },
   paymentType: { type: String, required: true },
-  value: { type: Number, required: true }
+  value: { type: Number, required: true },
+  contents: { type: [contentSchema], default: undefined }
 })
 
 const Student = model<StudentProps>('students', schema)

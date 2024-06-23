@@ -94,7 +94,10 @@ export async function createStudent(req: Request, res: Response) {
       name,
       age,
       paymentType,
-      value
+      value,
+      contents: userFound.contents
+        ? userFound.contents.map((content) => ({ ...content, done: false }))
+        : []
     })
     await newStudent.save()
     res.status(201).send({

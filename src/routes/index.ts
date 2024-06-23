@@ -20,11 +20,11 @@ router.post('/users', createUser)
 router.put('/users/:id', editUser)
 router.delete('/users/:id', removeUser)
 
-router.post('/contents/:userId', createContent)
-router.delete('/contents/:userId/:id', removeContent)
+router.post('/users/contents/:userId', createContent)
+router.delete('/users/contents/:userId/:id', removeContent)
 
-router.post('/themes/:userId', createTheme)
-router.delete('/themes/:userId/:id', removeTheme)
+router.post('/users/themes/:userId', createTheme)
+router.delete('/users/themes/:userId/:id', removeTheme)
 
 // Students CRUD
 router.get('/students/:userId', findStudentsByUserId)
