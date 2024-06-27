@@ -1,29 +1,27 @@
 import { Request, Response } from 'express'
 import { Types } from 'mongoose'
-import User from '@/models/User'
+import Student from '@/models/Student'
 
-export async function createContent(req: Request, res: Response) {
+export async function createContentInStudent(req: Request, res: Response) {
   try {
-    const { userId } = req.params
+    const { studentId } = req.params
     const { content } = req.body
     if (!content) {
       throw 'Required'
     }
-    const userFound = await User.findById(userId)
-    if (!userFound) {
+    const studentFound = await Student.findById(studentId)
+    if (!studentFound) {
       throw 'Not found'
     }
-    if (!userFound.subject) {
-      throw 'Not compatible'
-    }
-    await User.findByIdAndUpdate(userId, {
-      email: userFound.email,
-      password: userFound.password,
-      accountType: userFound.accountType,
-      subject: userFound.subject,
-      contents: userFound.contents
-        ? [...userFound.contents, { id: new Types.ObjectId(), content }]
-        : [{ id: new Types.ObjectId(), content }]
+    await Student.findByIdAndUpdate(studentId, {
+      userId: studentFound.userId,
+      name: studentFound.name,
+      age: studentFound.age,
+      paymentType: studentFound.paymentType,
+      value: studentFound.value,
+      contents: studentFound.contents
+        ? [...studentFound.contents, { id: new Types.ObjectId(), content, done: false }]
+        : [{ id: new Types.ObjectId(), content, done: false }]
     })
     res.status(201).send({
       success: true,
@@ -41,13 +39,7 @@ export async function createContent(req: Request, res: Response) {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'User not found'
-      })
-    } else if (error === 'Not compatible') {
-      res.status(401).send({
-        success: false,
-        status: 401,
-        message: 'User is not compatible'
+        message: 'Student not found'
       })
     } else {
       res.status(400).send({
@@ -59,19 +51,77 @@ export async function createContent(req: Request, res: Response) {
   }
 }
 
-export async function removeContent(req: Request, res: Response) {
+export async function handleContentInStudent(req: Request, res: Response) {
   try {
-    const { userId, id } = req.params
-    const userFound = await User.findById(userId)
-    if (!userFound) {
+    const { studentId, id } = req.params
+    const { done } = req.body
+    if (done === undefined || done === null) {
+      throw 'Required'
+    }
+    if (typeof done !== 'boolean') {
+      throw 'Poorly formatted'
+    }
+    const studentFound = await Student.findById(studentId)
+    if (!studentFound) {
       throw 'Not found'
     }
-    const contentIndex = userFound.contents?.findIndex((content) => content.id.toString() === id)
+    const contentIndex = studentFound.contents?.findIndex((content) => content.id.toString() === id)
     if (contentIndex === undefined || contentIndex === -1) {
       throw 'Not found'
     }
-    userFound.contents?.splice(contentIndex, 1)
-    await userFound.save()
+    if (done) {
+      studentFound.contents[contentIndex].done = true
+    } else {
+      studentFound.contents[contentIndex].done = false
+    }
+    await studentFound.save()
+    res.status(200).send({
+      success: true,
+      status: 200,
+      message: 'Content changed'
+    })
+  } catch (error) {
+    if (error === 'Required') {
+      res.status(422).send({
+        success: false,
+        status: 422,
+        message: 'All fields are required'
+      })
+    } else if (error === 'Poorly formatted') {
+      res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'Fields are poorly formatted'
+      })
+    } else if (error === 'Not found') {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'Student or content not found'
+      })
+    } else {
+      res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'Error in request'
+      })
+    }
+  }
+}
+
+export async function removeContentInStudent(req: Request, res: Response) {
+  try {
+    const { studentId, id } = req.params
+    const studentFound = await Student.findById(studentId)
+    if (!studentFound) {
+      throw 'Not found'
+    }
+    const contentIndex = studentFound.contents?.findIndex((content) => content.id.toString() === id)
+    if (contentIndex === undefined || contentIndex === -1) {
+      throw 'Not found'
+    }
+    studentFound.contents?.splice(contentIndex, 1)
+    await studentFound.save()
     res.status(200).send({
       success: true,
       status: 200,
@@ -82,7 +132,7 @@ export async function removeContent(req: Request, res: Response) {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'User or content not found'
+        message: 'Student or content not found'
       })
     } else {
       res.status(400).send({

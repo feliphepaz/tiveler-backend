@@ -2,33 +2,33 @@ import { Request, Response } from 'express'
 import { Types } from 'mongoose'
 import User from '@/models/User'
 
-export async function createTheme(req: Request, res: Response) {
+export async function createContentInUser(req: Request, res: Response) {
   try {
     const { userId } = req.params
-    const { theme } = req.body
-    if (!theme) {
+    const { content } = req.body
+    if (!content) {
       throw 'Required'
     }
     const userFound = await User.findById(userId)
     if (!userFound) {
       throw 'Not found'
     }
-    if (!userFound.type) {
+    if (!userFound.subject) {
       throw 'Not compatible'
     }
     await User.findByIdAndUpdate(userId, {
       email: userFound.email,
       password: userFound.password,
       accountType: userFound.accountType,
-      type: userFound.type,
-      themes: userFound.themes
-        ? [...userFound.themes, { id: new Types.ObjectId(), theme }]
-        : [{ id: new Types.ObjectId(), theme }]
+      subject: userFound.subject,
+      contents: userFound.contents
+        ? [...userFound.contents, { id: new Types.ObjectId(), content }]
+        : [{ id: new Types.ObjectId(), content }]
     })
     res.status(201).send({
       success: true,
       status: 201,
-      message: 'Theme created'
+      message: 'Content created'
     })
   } catch (error) {
     if (error === 'Required') {
@@ -59,30 +59,30 @@ export async function createTheme(req: Request, res: Response) {
   }
 }
 
-export async function removeTheme(req: Request, res: Response) {
+export async function removeContentInUser(req: Request, res: Response) {
   try {
     const { userId, id } = req.params
     const userFound = await User.findById(userId)
     if (!userFound) {
       throw 'Not found'
     }
-    const themeIndex = userFound.themes?.findIndex((theme) => theme.id.toString() === id)
-    if (themeIndex === undefined || themeIndex === -1) {
+    const contentIndex = userFound.contents?.findIndex((content) => content.id.toString() === id)
+    if (contentIndex === undefined || contentIndex === -1) {
       throw 'Not found'
     }
-    userFound.themes?.splice(themeIndex, 1)
+    userFound.contents?.splice(contentIndex, 1)
     await userFound.save()
     res.status(200).send({
       success: true,
       status: 200,
-      message: 'Theme removed'
+      message: 'Content removed'
     })
   } catch (error) {
     if (error === 'Not found') {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'User or theme not found'
+        message: 'User or content not found'
       })
     } else {
       res.status(400).send({

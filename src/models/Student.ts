@@ -6,7 +6,7 @@ interface StudentProps {
   age: number
   paymentType: 'monthly' | 'session'
   value: number
-  contents?: {
+  contents: {
     id: ObjectId
     content: string
     done: boolean

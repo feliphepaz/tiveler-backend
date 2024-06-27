@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { index } from '@/controllers/BaseController'
 import { findUserById, createUser, editUser, removeUser } from '@/controllers/UsersController'
-import { createContent, removeContent } from '@/controllers/ContentsController'
-import { createTheme, removeTheme } from '@/controllers/ThemesController'
+import { createContentInUser, removeContentInUser } from '@/controllers/UserContentsController'
+import { createThemeInUser, removeThemeInUser } from '@/controllers/UserThemesController'
 import {
   findStudentsByUserId,
   findStudentById,
@@ -10,6 +10,11 @@ import {
   editStudent,
   removeStudent
 } from '@/controllers/StudentsController'
+import {
+  createContentInStudent,
+  handleContentInStudent,
+  removeContentInStudent
+} from '@/controllers/ContentsController'
 const router = Router()
 
 router.get('/', index)
@@ -20,11 +25,11 @@ router.post('/users', createUser)
 router.put('/users/:id', editUser)
 router.delete('/users/:id', removeUser)
 
-router.post('/users/contents/:userId', createContent)
-router.delete('/users/contents/:userId/:id', removeContent)
+router.post('/users/contents/:userId', createContentInUser)
+router.delete('/users/contents/:userId/:id', removeContentInUser)
 
-router.post('/users/themes/:userId', createTheme)
-router.delete('/users/themes/:userId/:id', removeTheme)
+router.post('/users/themes/:userId', createThemeInUser)
+router.delete('/users/themes/:userId/:id', removeThemeInUser)
 
 // Students CRUD
 router.get('/students/:userId', findStudentsByUserId)
@@ -32,5 +37,9 @@ router.get('/students/:userId/:id', findStudentById)
 router.post('/students', createStudent)
 router.put('/students/:id', editStudent)
 router.delete('/students/:id', removeStudent)
+
+router.post('/students/contents/:studentId', createContentInStudent)
+router.put('/students/contents/:studentId/:id', handleContentInStudent)
+router.delete('/students/contents/:studentId/:id', removeContentInStudent)
 
 export default router
