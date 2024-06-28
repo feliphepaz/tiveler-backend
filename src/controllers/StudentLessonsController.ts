@@ -2,16 +2,54 @@ import { Request, Response } from 'express'
 import { Types } from 'mongoose'
 import Student from '@/models/Student'
 
-export async function createContentInStudent(req: Request, res: Response) {
+export async function findLessonById(req: Request, res: Response) {
+  try {
+    const { studentId, id } = req.params
+    const studentFound = await Student.findById(studentId)
+    if (!studentFound) {
+      throw 'Not found'
+    }
+    const lesson = studentFound.lessons.find((lesson) => lesson.id.toString() === id)
+    if (!lesson) {
+      throw 'Not found'
+    }
+    res.status(200).send({
+      success: true,
+      status: 200,
+      data: lesson
+    })
+  } catch (error) {
+    if (error === 'Not found') {
+      res.status(404).send({
+        success: false,
+        status: 404,
+        message: 'Student or lesson not found'
+      })
+    } else {
+      res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'Error in request'
+      })
+    }
+  }
+}
+
+export async function createLessonInStudent(req: Request, res: Response) {
   try {
     const { studentId } = req.params
-    const { content } = req.body
-    if (!content) {
+    const { date } = req.body
+    if (!date) {
       throw 'Required'
     }
     const studentFound = await Student.findById(studentId)
     if (!studentFound) {
       throw 'Not found'
+    }
+    const newLesson = {
+      id: new Types.ObjectId(),
+      date,
+      done: false
     }
     await Student.findByIdAndUpdate(studentId, {
       userId: studentFound.userId,
@@ -19,14 +57,13 @@ export async function createContentInStudent(req: Request, res: Response) {
       age: studentFound.age,
       paymentType: studentFound.paymentType,
       value: studentFound.value,
-      contents: studentFound.contents
-        ? [...studentFound.contents, { id: new Types.ObjectId(), content, done: false }]
-        : [{ id: new Types.ObjectId(), content, done: false }]
+      contents: studentFound.contents,
+      lessons: studentFound.lessons ? [...studentFound.lessons, newLesson] : [newLesson]
     })
     res.status(201).send({
       success: true,
       status: 201,
-      message: 'Content created'
+      message: 'Lesson created'
     })
   } catch (error) {
     if (error === 'Required') {
@@ -51,41 +88,48 @@ export async function createContentInStudent(req: Request, res: Response) {
   }
 }
 
-export async function handleContentInStudent(req: Request, res: Response) {
+export async function editLessonInStudent(req: Request, res: Response) {
   try {
     const { studentId, id } = req.params
-    const { done } = req.body
-    if (done === undefined || done === null) {
+    const { date, performance, lessonCharacteristics, report, done } = req.body
+    if (
+      !date &&
+      !performance &&
+      !lessonCharacteristics &&
+      !report &&
+      (done === undefined || done === null)
+    ) {
       throw 'Required'
     }
-    if (typeof done !== 'boolean') {
+    if ((performance !== 'good' && performance !== 'bad') || typeof done !== 'boolean') {
       throw 'Poorly formatted'
     }
     const studentFound = await Student.findById(studentId)
     if (!studentFound) {
       throw 'Not found'
     }
-    const contentIndex = studentFound.contents?.findIndex((content) => content.id.toString() === id)
-    if (contentIndex === undefined || contentIndex === -1) {
+    const lessonIndex = studentFound.lessons.findIndex((lesson) => lesson.id.toString() === id)
+    if (lessonIndex === undefined || lessonIndex === -1) {
       throw 'Not found'
     }
-    if (done) {
-      studentFound.contents[contentIndex].done = true
-    } else {
-      studentFound.contents[contentIndex].done = false
-    }
+    const lessonFound = studentFound.lessons[lessonIndex]
+    lessonFound.date = date ?? lessonFound.date
+    lessonFound.performance = performance ?? lessonFound.performance
+    lessonFound.lessonCharacteristics = lessonCharacteristics ?? lessonFound.lessonCharacteristics
+    lessonFound.report = report ?? lessonFound.report
+    lessonFound.done = done ?? lessonFound.done
     await studentFound.save()
     res.status(200).send({
       success: true,
       status: 200,
-      message: 'Content changed'
+      message: 'Lesson updated'
     })
   } catch (error) {
     if (error === 'Required') {
       res.status(422).send({
         success: false,
         status: 422,
-        message: 'All fields are required'
+        message: 'At least one field is required'
       })
     } else if (error === 'Poorly formatted') {
       res.status(400).send({
@@ -97,7 +141,7 @@ export async function handleContentInStudent(req: Request, res: Response) {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'Student or content not found'
+        message: 'Student or lesson not found'
       })
     } else {
       res.status(400).send({
@@ -109,30 +153,31 @@ export async function handleContentInStudent(req: Request, res: Response) {
   }
 }
 
-export async function removeContentInStudent(req: Request, res: Response) {
+export async function removeLessonInStudent(req: Request, res: Response) {
   try {
     const { studentId, id } = req.params
     const studentFound = await Student.findById(studentId)
     if (!studentFound) {
       throw 'Not found'
     }
-    const contentIndex = studentFound.contents?.findIndex((content) => content.id.toString() === id)
-    if (contentIndex === undefined || contentIndex === -1) {
+    const lessonIndex = studentFound.lessons.findIndex((lesson) => lesson.id.toString() === id)
+    if (lessonIndex === undefined || lessonIndex === -1) {
       throw 'Not found'
     }
-    studentFound.contents?.splice(contentIndex, 1)
+    studentFound.lessons.splice(lessonIndex, 1)
     await studentFound.save()
     res.status(200).send({
       success: true,
       status: 200,
-      message: 'Content removed'
+      message: 'Lesson removed'
     })
   } catch (error) {
+    console.log(error)
     if (error === 'Not found') {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'Student or content not found'
+        message: 'Student or lesson not found'
       })
     } else {
       res.status(400).send({

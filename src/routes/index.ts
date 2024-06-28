@@ -14,7 +14,13 @@ import {
   createContentInStudent,
   handleContentInStudent,
   removeContentInStudent
-} from '@/controllers/ContentsController'
+} from '@/controllers/StudentContentsController'
+import {
+  findLessonById,
+  createLessonInStudent,
+  editLessonInStudent,
+  removeLessonInStudent
+} from '@/controllers/StudentLessonsController'
 const router = Router()
 
 router.get('/', index)
@@ -41,5 +47,10 @@ router.delete('/students/:id', removeStudent)
 router.post('/students/contents/:studentId', createContentInStudent)
 router.put('/students/contents/:studentId/:id', handleContentInStudent)
 router.delete('/students/contents/:studentId/:id', removeContentInStudent)
+
+router.get('/students/lessons/:studentId/:id', findLessonById)
+router.post('/students/lessons/:studentId', createLessonInStudent)
+router.put('/students/lessons/:studentId/:id', editLessonInStudent)
+router.delete('/students/lessons/:studentId/:id', removeLessonInStudent)
 
 export default router

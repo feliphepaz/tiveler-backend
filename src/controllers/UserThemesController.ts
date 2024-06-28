@@ -16,14 +16,13 @@ export async function createThemeInUser(req: Request, res: Response) {
     if (!userFound.type) {
       throw 'Not compatible'
     }
+    const newTheme = { id: new Types.ObjectId(), theme }
     await User.findByIdAndUpdate(userId, {
       email: userFound.email,
       password: userFound.password,
       accountType: userFound.accountType,
       type: userFound.type,
-      themes: userFound.themes
-        ? [...userFound.themes, { id: new Types.ObjectId(), theme }]
-        : [{ id: new Types.ObjectId(), theme }]
+      themes: userFound.themes ? [...userFound.themes, newTheme] : [newTheme]
     })
     res.status(201).send({
       success: true,

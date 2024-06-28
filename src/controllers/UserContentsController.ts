@@ -16,14 +16,13 @@ export async function createContentInUser(req: Request, res: Response) {
     if (!userFound.subject) {
       throw 'Not compatible'
     }
+    const newContent = { id: new Types.ObjectId(), content }
     await User.findByIdAndUpdate(userId, {
       email: userFound.email,
       password: userFound.password,
       accountType: userFound.accountType,
       subject: userFound.subject,
-      contents: userFound.contents
-        ? [...userFound.contents, { id: new Types.ObjectId(), content }]
-        : [{ id: new Types.ObjectId(), content }]
+      contents: userFound.contents ? [...userFound.contents, newContent] : [newContent]
     })
     res.status(201).send({
       success: true,
