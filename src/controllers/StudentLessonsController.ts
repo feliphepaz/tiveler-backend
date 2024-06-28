@@ -101,7 +101,10 @@ export async function editLessonInStudent(req: Request, res: Response) {
     ) {
       throw 'Required'
     }
-    if ((performance !== 'good' && performance !== 'bad') || typeof done !== 'boolean') {
+    if (
+      (done && typeof done !== 'boolean') ||
+      (performance && performance !== 'good' && performance !== 'bad')
+    ) {
       throw 'Poorly formatted'
     }
     const studentFound = await Student.findById(studentId)
@@ -172,7 +175,6 @@ export async function removeLessonInStudent(req: Request, res: Response) {
       message: 'Lesson removed'
     })
   } catch (error) {
-    console.log(error)
     if (error === 'Not found') {
       res.status(404).send({
         success: false,

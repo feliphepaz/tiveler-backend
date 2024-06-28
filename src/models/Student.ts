@@ -4,7 +4,7 @@ interface StudentProps {
   userId: ObjectId
   name: string
   age: number
-  paymentType: 'monthly' | 'session'
+  paymentType: 'monthly' | 'lesson'
   value: number
   contents: {
     id: ObjectId

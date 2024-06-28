@@ -79,7 +79,7 @@ export async function createStudent(req: Request, res: Response) {
     if (!userId || !name || !age || !paymentType || !value) {
       throw 'Required'
     }
-    if (paymentType !== 'monthly' && paymentType !== 'session') {
+    if (paymentType !== 'monthly' && paymentType !== 'lesson') {
       throw 'Poorly formatted'
     }
     const userFound = await User.findById(userId)
@@ -147,7 +147,7 @@ export async function editStudent(req: Request, res: Response) {
     if (!name && !age && !paymentType && !value) {
       throw 'Required'
     }
-    if (paymentType && paymentType !== 'monthly' && paymentType !== 'session') {
+    if (paymentType && paymentType !== 'monthly' && paymentType !== 'lesson') {
       throw 'Poorly formatted'
     }
     const studentFound = await Student.findById(id)
