@@ -5,7 +5,7 @@ export function index(req: Request, res: Response) {
     res.status(200).send({
       success: true,
       status: 200,
-      message: 'Tardis backend running'
+      message: 'Tiveler backend running'
     })
   } catch (error) {
     res.status(400).send({

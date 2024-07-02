@@ -1,19 +1,19 @@
 # Descrição
 
-Sistema desenvolvido em Node.js e Express para atuar como o núcleo do Projeto Tardis.
+Sistema desenvolvido em Node.js e Express para atuar como o núcleo do Tiveler.
 
 # Instalação
 
 #### 1. Clone o repositório em sua máquina local:
 
 ```
-git clone git@github.com:feliphepaz/tardis-backend.git
+git clone git@github.com:feliphepaz/tiveler-backend.git
 ```
 
 #### 2. Acesse o diretório do projeto e execute o seguinte comando para instalar as dependências:
 
 ```
-cd tardis-backend
+cd tiveler-backend
 yarn install
 ```
 
