@@ -1,44 +1,28 @@
 import { Router } from 'express'
 import { index } from '@/controllers/BaseController'
-import { findUserById, createUser, editUser, removeUser } from '@/controllers/UsersController'
-import { createContentInUser, removeContentInUser } from '@/controllers/UserContentsController'
-import { createThemeInUser, removeThemeInUser } from '@/controllers/UserThemesController'
+import { findUserById, createUser, editUser, removeUser } from '@/controllers/users/UsersController'
+import {
+  createContentInUser,
+  removeContentInUser
+} from '@/controllers/users/UserContentsController'
 import {
   findStudentsByUserId,
   findStudentById,
   createStudent,
   editStudent,
   removeStudent
-} from '@/controllers/StudentsController'
+} from '@/controllers/students/StudentsController'
 import {
   createContentInStudent,
   handleContentInStudent,
   removeContentInStudent
-} from '@/controllers/StudentContentsController'
+} from '@/controllers/students/StudentContentsController'
 import {
   findLessonById,
   createLessonInStudent,
   editLessonInStudent,
   removeLessonInStudent
-} from '@/controllers/StudentLessonsController'
-import {
-  findPatientsByUserId,
-  findPatientById,
-  createPatient,
-  editPatient,
-  removePatient
-} from '@/controllers/PatientsController'
-import {
-  createThemeInPatient,
-  handleThemeInPatient,
-  removeThemeInPatient
-} from '@/controllers/PatientThemesController'
-import {
-  findSessionById,
-  createSessionInPatient,
-  editSessionInPatient,
-  removeSessionInPatient
-} from '@/controllers/PatientSessionsController'
+} from '@/controllers/students/StudentLessonsController'
 const router = Router()
 
 router.get('/', index)
@@ -51,9 +35,6 @@ router.delete('/users/:id', removeUser)
 
 router.post('/users/contents/:userId', createContentInUser)
 router.delete('/users/contents/:userId/:id', removeContentInUser)
-
-router.post('/users/themes/:userId', createThemeInUser)
-router.delete('/users/themes/:userId/:id', removeThemeInUser)
 
 // Students CRUD
 router.get('/students/:userId', findStudentsByUserId)
@@ -70,21 +51,5 @@ router.get('/students/lessons/:studentId/:id', findLessonById)
 router.post('/students/lessons/:studentId', createLessonInStudent)
 router.put('/students/lessons/:studentId/:id', editLessonInStudent)
 router.delete('/students/lessons/:studentId/:id', removeLessonInStudent)
-
-// Patients CRUD
-router.get('/patients/:userId', findPatientsByUserId)
-router.get('/patients/:userId/:id', findPatientById)
-router.post('/patients', createPatient)
-router.put('/patients/:id', editPatient)
-router.delete('/patients/:id', removePatient)
-
-router.post('/patients/themes/:patientId', createThemeInPatient)
-router.put('/patients/themes/:patientId/:id', handleThemeInPatient)
-router.delete('/patients/themes/:patientId/:id', removeThemeInPatient)
-
-router.get('/patients/sessions/:patientId/:id', findSessionById)
-router.post('/patients/sessions/:patientId', createSessionInPatient)
-router.put('/patients/sessions/:patientId/:id', editSessionInPatient)
-router.delete('/patients/sessions/:patientId/:id', removeSessionInPatient)
 
 export default router

@@ -1,25 +1,25 @@
 import { Request, Response } from 'express'
-import Patient from '@/models/Patient'
+import Student from '@/models/Student'
 import User from '@/models/User'
 
-export async function findPatientsByUserId(req: Request, res: Response) {
+export async function findStudentsByUserId(req: Request, res: Response) {
   try {
     const { userId } = req.params
-    const patientsFound = await Patient.find({ userId })
-    if (patientsFound.length <= 0) {
+    const studentsFound = await Student.find({ userId })
+    if (studentsFound.length <= 0) {
       throw 'Not found'
     }
     res.status(200).send({
       success: true,
       status: 200,
-      data: patientsFound
+      data: studentsFound
     })
   } catch (error) {
     if (error === 'Not found') {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'Patients not found'
+        message: 'Students not found'
       })
     } else {
       res.status(400).send({
@@ -31,37 +31,28 @@ export async function findPatientsByUserId(req: Request, res: Response) {
   }
 }
 
-export async function findPatientById(req: Request, res: Response) {
+export async function findStudentById(req: Request, res: Response) {
   try {
     const { userId, id } = req.params
     const userFound = await User.findById(userId)
     if (!userFound) {
       throw 'Not found'
     }
-    if (userFound.accountType === 'teacher') {
-      throw 'Not compatible'
-    }
-    const patientFound = await Patient.findById(id)
-    if (!patientFound) {
+    const studentFound = await Student.findById(id)
+    if (!studentFound) {
       throw 'Not found'
     }
     res.status(200).send({
       success: true,
       status: 200,
-      data: patientFound
+      data: studentFound
     })
   } catch (error) {
     if (error === 'Not found') {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'User or patient not found'
-      })
-    } else if (error === 'Not compatible') {
-      res.status(401).send({
-        success: false,
-        status: 401,
-        message: 'User is not compatible'
+        message: 'User or student not found'
       })
     } else {
       res.status(400).send({
@@ -73,35 +64,34 @@ export async function findPatientById(req: Request, res: Response) {
   }
 }
 
-export async function createPatient(req: Request, res: Response) {
+export async function createStudent(req: Request, res: Response) {
   try {
     const { userId, name, age, paymentType, value } = req.body
     if (!userId || !name || !age || !paymentType || !value) {
       throw 'Required'
     }
-    if (paymentType !== 'monthly' && paymentType !== 'session') {
+    if (paymentType !== 'monthly' && paymentType !== 'lesson') {
       throw 'Poorly formatted'
     }
     const userFound = await User.findById(userId)
     if (!userFound) {
       throw 'Not found'
     }
-    if (userFound.accountType === 'teacher') {
-      throw 'Not compatible'
-    }
-    const newPatient = new Patient({
+    const newStudent = new Student({
       userId: userFound._id,
       name,
       age,
       paymentType,
       value,
-      themes: userFound.themes ? userFound.themes.map((theme) => ({ ...theme, done: false })) : []
+      contents: userFound.contents
+        ? userFound.contents.map((content) => ({ ...content, done: false }))
+        : []
     })
-    await newPatient.save()
+    await newStudent.save()
     res.status(201).send({
       success: true,
       status: 201,
-      message: 'Patient created'
+      message: 'Student created'
     })
   } catch (error) {
     if (error === 'Required') {
@@ -122,12 +112,6 @@ export async function createPatient(req: Request, res: Response) {
         status: 404,
         message: 'User not found'
       })
-    } else if (error === 'Not compatible') {
-      res.status(401).send({
-        success: false,
-        status: 401,
-        message: 'User is not compatible'
-      })
     } else {
       res.status(400).send({
         success: false,
@@ -138,30 +122,30 @@ export async function createPatient(req: Request, res: Response) {
   }
 }
 
-export async function editPatient(req: Request, res: Response) {
+export async function editStudent(req: Request, res: Response) {
   try {
     const { id } = req.params
     const { name, age, paymentType, value } = req.body
     if (!name && !age && !paymentType && !value) {
       throw 'Required'
     }
-    if (paymentType && paymentType !== 'monthly' && paymentType !== 'session') {
+    if (paymentType && paymentType !== 'monthly' && paymentType !== 'lesson') {
       throw 'Poorly formatted'
     }
-    const patientFound = await Patient.findById(id)
-    if (!patientFound) {
+    const studentFound = await Student.findById(id)
+    if (!studentFound) {
       throw 'Not found'
     }
-    await Patient.findByIdAndUpdate(id, {
-      name: name ?? patientFound.name,
-      age: age ?? patientFound.age,
-      paymentType: paymentType ?? patientFound.paymentType,
-      value: value ?? patientFound.value
+    await Student.findByIdAndUpdate(id, {
+      name: name ?? studentFound.name,
+      age: age ?? studentFound.age,
+      paymentType: paymentType ?? studentFound.paymentType,
+      value: value ?? studentFound.value
     })
     res.status(200).send({
       success: true,
       status: 200,
-      message: 'Patient updated'
+      message: 'Student updated'
     })
   } catch (error) {
     if (error === 'Required') {
@@ -180,7 +164,7 @@ export async function editPatient(req: Request, res: Response) {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'Patient not found'
+        message: 'Student not found'
       })
     } else {
       res.status(400).send({
@@ -192,24 +176,24 @@ export async function editPatient(req: Request, res: Response) {
   }
 }
 
-export async function removePatient(req: Request, res: Response) {
+export async function removeStudent(req: Request, res: Response) {
   try {
     const { id } = req.params
-    const patientFound = await Patient.findByIdAndDelete(id)
-    if (!patientFound) {
+    const studentFound = await Student.findByIdAndDelete(id)
+    if (!studentFound) {
       throw 'Not found'
     }
     res.status(200).send({
       success: true,
       status: 200,
-      message: 'Patient removed'
+      message: 'Student removed'
     })
   } catch (error) {
     if (error === 'Not found') {
       res.status(404).send({
         success: false,
         status: 404,
-        message: 'Patient not found'
+        message: 'Student not found'
       })
     } else {
       res.status(400).send({
