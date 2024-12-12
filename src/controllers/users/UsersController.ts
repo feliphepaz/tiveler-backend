@@ -81,8 +81,8 @@ export async function createUser(req: Request, res: Response) {
 export async function editUser(req: Request, res: Response) {
   try {
     const { id } = req.params
-    const { name, email, password } = req.body
-    if (!name && !email && !password) {
+    const { name, email, password, subject } = req.body
+    if (!name && !email && !password && !subject) {
       throw 'Required'
     }
     const userFound = await User.findById(id)
@@ -93,7 +93,8 @@ export async function editUser(req: Request, res: Response) {
     await User.findByIdAndUpdate(id, {
       name: name ?? userFound?.name,
       email: email ?? userFound?.email,
-      password: password ? bcrypt.hashSync(password, salt) : userFound?.password
+      password: password ? bcrypt.hashSync(password, salt) : userFound?.password,
+      subject: subject ?? userFound?.subject
     })
     res.status(200).send({
       success: true,
