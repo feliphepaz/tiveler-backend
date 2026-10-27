@@ -1,4 +1,4 @@
-# Tiveler Backend
+# Tiveler Back-end
 
 Sistema backend desenvolvido em Node.js, TypeScript e Express para dar suporte à aplicação Tiveler. O projeto expõe uma API REST para gestão de conteúdos acadêmicos e informações relacionadas ao sistema, com estrutura organizada em controllers, models, routes e documentação Swagger.
 
@@ -164,14 +164,6 @@ yarn lint:fix
 - O servidor inicia com `nodemon` para facilitar o desenvolvimento.
 - O MongoDB deve estar disponível antes do start da aplicação.
 
-## Contribuição
-
-Contribuições são bem-vindas. Para propor melhorias ou correções, abra uma issue ou envie um pull request com descrições claras do que foi alterado.
-
 ## Licença
 
 Este projeto está licenciado sob a licença MIT.
-
----
-
-fix: README polished and aligned with project structure
