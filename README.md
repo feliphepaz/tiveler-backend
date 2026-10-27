@@ -1,4 +1,4 @@
-# Tiveler (Back-end)
+# Tiveler (back-end)
 
 Sistema backend desenvolvido em Node.js, TypeScript e Express para dar suporte à aplicação Tiveler. O projeto expõe uma API REST para gestão de conteúdos acadêmicos e informações relacionadas ao sistema, com estrutura organizada em controllers, models, routes e documentação Swagger.
 
