@@ -167,3 +167,8 @@ yarn lint:fix
 ## Licença
 
 Este projeto está licenciado sob a licença MIT.
+
+## Links úteis
+
+- Site em produção: https://tiveler-frontend.vercel.app
+- Repositório do front-end: https://github.com/feliphepaz/tiveler-frontend
