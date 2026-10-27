@@ -1,118 +1,179 @@
-# Descrição
+# Tiveler Backend
 
-Sistema desenvolvido em Node.js e Express para atuar como o núcleo do Tiveler.
+feat: backend for Tiveler with CRUD, validations and API docs
 
-# Instalação
+Sistema backend desenvolvido em Node.js, TypeScript e Express para dar suporte à aplicação Tiveler. O projeto expõe uma API REST para gestão de conteúdos acadêmicos e informações relacionadas ao sistema, com estrutura organizada em controllers, models, routes e documentação Swagger.
 
-#### 1. Clone o repositório em sua máquina local:
+## Visão geral
 
-```
+Este backend foi pensado para servir como núcleo da aplicação Tiveler, oferecendo:
+
+- CRUD de estudantes
+- CRUD de conteúdos, lições e temas
+- Validações de dados
+- Conexão com MongoDB via Mongoose
+- Documentação da API com Swagger
+- Estrutura pronta para desenvolvimento e produção
+- Suporte a lint, formatação e padronização do código
+
+## Stack tecnológica
+
+- Node.js
+- TypeScript
+- Express
+- MongoDB + Mongoose
+- Swagger UI Express
+- CORS
+- dotenv
+- ESLint
+- Prettier
+- Husky
+- Nodemon
+
+## Requisitos
+
+Antes de iniciar, certifique-se de ter instalado em sua máquina:
+
+- Node.js (versão recomendada LTS)
+- Yarn
+- MongoDB em execução ou uma conexão configurada
+
+## Instalação
+
+1. Clone o repositório:
+
+```bash
 git clone git@github.com:feliphepaz/tiveler-backend.git
 ```
 
-#### 2. Acesse o diretório do projeto e execute o seguinte comando para instalar as dependências:
+2. Acesse a pasta do projeto:
 
-```
+```bash
 cd tiveler-backend
+```
+
+3. Instale as dependências:
+
+```bash
 yarn install
 ```
 
-#### 4. Inicie o servidor de desenvolvimento:
+## Configuração de ambiente
 
-Este projeto utiliza o `nodemon` para executar o ambiente de desenvolvimento e monitorar em tempo real as alterações nos arquivos. Para iniciar o ambiente de desenvolvimento, utilize o seguinte comando:
+Crie um arquivo `.env.local` na raiz do projeto com as variáveis necessárias, por exemplo:
 
+```env
+PORT=5000
+DATABASE=mongodb://localhost:27017/tiveler
 ```
+
+> O projeto já usa `dotenv` para carregar esse arquivo durante a execução.
+
+## Executando em desenvolvimento
+
+Para iniciar o servidor em modo de desenvolvimento com reinicialização automática:
+
+```bash
 yarn dev
 ```
 
-#### 5. Documentação
+O servidor será iniciado em:
 
-A documentação da API foi escrita utilizando a biblioteca swagger-ui-express, para acessar, ao rodar o projeto, acesse o seguinte endpoint:
-
-`http:localhost:5000/docs`
-
-#### 6. Mode Debug
-
-Para depurar a aplicação através do debugger do vscode, siga estas instruções:
-
-1.  Abra o Visual Studio Code.
-
-2.  Acesse a seção de depuração na barra lateral do vscode ou utilize **Ctrl + Shift + D**.
-
-3.  Selecione a opção **Debug: Node with Nodemon**.
-
-4.  Clique no botão de play para iniciar o debugger.
-
-#### 6. Deploy e Build
-
-Para executar a aplicação em ambiente de produção, siga os seguintes passos para otimizar a performance e transpilar o código TypeScript para JavaScript:
-
-**Gerar o build:**
-
+```bash
+http://localhost:5000
 ```
+
+## Documentação da API
+
+A documentação da API foi gerada com Swagger e pode ser acessada em:
+
+```bash
+http://localhost:5000/docs
+```
+
+## Build para produção
+
+Para compilar o projeto TypeScript para JavaScript:
+
+```bash
 yarn build
 ```
 
-**Executar o projeto a partir do build:**
+Para iniciar a aplicação já compilada:
 
-```
+```bash
 yarn start
 ```
 
-# Lint e Formatação
+## Scripts disponíveis
 
-Este projeto utiliza `ESLint, Prettier, Husky e EditorConfig` para garantir consistência no estilo e qualidade do código, realizar linting e formatação automática, além de facilitar a colaboração em equipe.<br>
+No arquivo `package.json`, o projeto já contém os seguintes comandos:
 
-**Para rodar o lint geral que verifica sintaxe e formatação do código, utilize o seguinte comando**:
-
-<br>
-
-```
+```bash
+yarn dev
+yarn build
+yarn start
 yarn lint
-```
-
-<br>
-
-**Para corrigir os erros de formatação do código, utilize o seguinte comando**:
-
-<br>
-
-```
 yarn lint:fix
-```
-
-<br>
-
-## **Eslint**:
-
-ESLint é uma ferramenta de linting que ajuda a identificar e corrigir problemas no código TypeScript. Ele é configurado neste projeto para aplicar regras de estilo e boas práticas de codificação.
-
-Para executar o linting em todo o projeto, utilize o seguinte comando no terminal na pasta do projeto:
-
-<br>
-
-```
 yarn lint:syntax
-```
-
-<br>
-
-## **Prettier**:
-
-É uma ferramenta de formatação de código que permite manter um estilo de código consistente em todo o projeto. Ele é configurado para trabalhar em conjunto com o ESLint neste projeto.
-
-Para verificar os arquivos do projeto, utilize o seguinte comando:
-
-<br>
-
-```
 yarn lint:format
 ```
 
-<br>
+## Estrutura do projeto
 
-## **EditorConfig**:
+```bash
+tiveler-backend/
+├── src/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── server.ts
+│   └── ...
+├── .editorconfig
+├── .env.example
+├── .gitignore
+├── .husky/
+├── .lintstagedrc
+├── .prettierrc
+├── eslint.config.js
+├── nodemon.json
+├── package.json
+├── tsconfig.json
+├── README.md
+├── yarn.lock
+└── ...
+```
 
-É uma ferramenta que ajuda a manter a consistência do estilo de código entre diferentes editores e IDEs. O projeto possui um arquivo `.editorconfig` que define algumas configurações de estilo, como indentação, espaçamento, entre outros.<br><br>
+## Lint e formatação
 
-**Obs: utilizar o `.eslintignore` e o `@ts-nochek` somente em arquivos de terceiros.**
+O projeto utiliza ESLint, Prettier, Husky e EditorConfig para manter a padronização do código e evitar problemas de estilo.
+
+Para verificar a sintaxe e formatação:
+
+```bash
+yarn lint
+```
+
+Para corrigir automaticamente a formatação:
+
+```bash
+yarn lint:fix
+```
+
+## Observações
+
+- O projeto usa `tsc-alias` no build para resolver aliases de caminhos.
+- O servidor inicia com `nodemon` para facilitar o desenvolvimento.
+- O MongoDB deve estar disponível antes do start da aplicação.
+
+## Contribuição
+
+Contribuições são bem-vindas. Para propor melhorias ou correções, abra uma issue ou envie um pull request com descrições claras do que foi alterado.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT.
+
+---
+
+fix: README polished and aligned with project structure
